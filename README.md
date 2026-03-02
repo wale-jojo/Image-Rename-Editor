@@ -2,6 +2,8 @@
 
 A Tkinter-based image rename tool with thumbnail selection, drag-to-reorder, and flexible renaming rules.
 
+![Image Rename Editor Screenshot](Python%203.12%202026_3_2%2014_02_29.png)
+
 ## Requirements
 
 - Python 3.10+
