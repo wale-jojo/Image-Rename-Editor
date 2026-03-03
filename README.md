@@ -1,8 +1,27 @@
 # Image Rename Editor
 
-A Tkinter-based image rename tool with thumbnail selection, drag-to-reorder, and flexible renaming rules.
+A comprehensive Tkinter-based image rename tool with advanced selection, drag-to-reorder, and flexible renaming rules.
 
 ![Image Rename Editor Screenshot](Python%203.12%202026_3_2%2014_02_29.png)
+
+## Version Information
+
+**Version:** 2.0.0  
+**Release Date:** March 3, 2026  
+**Code Size:** 852+ lines  
+**Python Version:** 3.10+
+
+### Feature Summary
+- ✅ **Visual Thumbnail Browser** - Windows-style grid layout with image previews
+- ✅ **Advanced Selection** - Single, multi-select (Ctrl), range (Shift), rubber band drag selection
+- ✅ **Drag & Drop Reordering** - Visual drag-to-reorder with insertion line preview
+- ✅ **Flexible Renaming Rules** - Pattern templates, prefix/suffix, text replacement, index-only
+- ✅ **Selective Renaming** - Choose which files to rename with visual preview indicators
+- ✅ **Cut/Paste Operations** - Right-click context menu with batch position insertion
+- ✅ **Toolbar Actions** - Quick buttons for selection and move operations
+- ✅ **Multi-Format Support** - JPG, PNG, GIF, BMP, WEBP, TIFF (with optional Pillow)
+- ✅ **Smart Collision Detection** - Prevents duplicate names and file conflicts
+- ✅ **Live Preview** - Real-time preview of new names before applying changes
 
 ## Requirements
 
@@ -60,5 +79,40 @@ If **Keep original extension** is checked, the extension is preserved unless `{e
 
 ## Files
 
-- `rename_gui.py` - main application
-- `README.md` - usage guide
+- `rename_gui.py` - Main application (852 lines)
+- `README.md` - Usage guide and documentation
+
+## Technical Details
+
+- **GUI Framework:** Tkinter with ttk widgets for modern appearance
+- **Image Processing:** PIL/Pillow (optional) for enhanced thumbnail support
+- **File Operations:** pathlib for cross-platform file handling
+- **Key Components:**
+  - Canvas-based scrollable thumbnail grid
+  - Drag & drop system with modifier key detection
+  - Rubber band selection with coordinate transformation
+  - Multi-threaded safe file operations with collision detection
+  - Pattern-based renaming engine with template substitution
+
+## Version History
+
+### v2.0.0 (March 3, 2026)
+- Added selective renaming with visual indicators ([RENAME]/[SKIP] prefixes)
+- Enhanced preview system showing all files with rename status
+- Improved confirmation dialogs with skip count information
+- Fixed toolbar button spacing and alignment issues
+- Comprehensive code review and bug fixes
+
+### v1.5.0 (Previous)
+- Implemented rubber band selection (drag to select multiple files)
+- Added cut/paste operations with right-click context menus
+- Enhanced drag preview with insertion line indicators
+- Added toolbar buttons for quick move operations
+- Improved multi-column grid layout for better file organization
+
+### v1.0.0 (Initial)
+- Basic thumbnail browser with file loading
+- Core renaming functionality with multiple rule types
+- Single and multi-select capabilities
+- Drag and drop reordering
+- Pattern-based renaming with template support

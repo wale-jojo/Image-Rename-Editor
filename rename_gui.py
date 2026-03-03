@@ -5,6 +5,11 @@ from dataclasses import dataclass
 from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 
+# Version information
+__version__ = "2.0.0"
+__date__ = "2026-03-03"
+__author__ = "Image Rename Editor"
+
 # Import modifier key constants
 try:
 	from tkinter.constants import CONTROL_MASK, SHIFT_MASK
@@ -29,7 +34,7 @@ class RenameItem:
 class ImageRenameApp(tk.Tk):
 	def __init__(self) -> None:
 		super().__init__()
-		self.title("Image Rename Editor")
+		self.title(f"Image Rename Editor v{__version__}")
 		self.geometry("980x640")
 		self.minsize(860, 520)
 
@@ -729,29 +734,48 @@ class ImageRenameApp(tk.Tk):
 			return 0
 
 		active_items = self._get_active_items()
-		if self.rename_selected_var.get() and not active_items:
+		select_mode = self.rename_selected_var.get()
+		
+		if select_mode and not active_items:
 			self.status_var.set("No images selected for renaming.")
+			# Still show all files in preview, but indicate none will be renamed
+			for item in self.items:
+				self.preview_listbox.insert(tk.END, f"[SKIP] {item.path.name}")
 			return 0
 
 		start = self.start_index_var.get()
 		errors = 0
 		new_names: list[str] = []
+		active_indices = {self.items.index(item) for item in active_items} if select_mode else set()
 
-		for i, item in enumerate(active_items, start=start):
-			try:
-				new_name = self._compute_new_name(item, i)
-				item.new_name = new_name
-				new_names.append(new_name)
-				self.preview_listbox.insert(tk.END, new_name)
-			except Exception as exc:  # noqa: BLE001
-				errors += 1
-				item.new_name = ""
-				self.preview_listbox.insert(tk.END, f"Error: {exc}")
+		for i, item in enumerate(self.items):
+			if select_mode and i not in active_indices:
+				# Show skipped files in selection mode
+				self.preview_listbox.insert(tk.END, f"[SKIP] {item.path.name}")
+				item.new_name = ""  # Clear new_name for skipped items
+			else:
+				# This item will be renamed
+				try:
+					rename_index = len([x for x in active_items if self.items.index(x) <= i]) + start - 1
+					new_name = self._compute_new_name(item, rename_index)
+					item.new_name = new_name
+					new_names.append(new_name)
+					prefix = "[RENAME] " if select_mode else ""
+					self.preview_listbox.insert(tk.END, f"{prefix}{new_name}")
+				except Exception as exc:  # noqa: BLE001
+					errors += 1
+					item.new_name = ""
+					prefix = "[ERROR] " if select_mode else ""
+					self.preview_listbox.insert(tk.END, f"{prefix}Error: {exc}")
 
 		if errors:
 			self.status_var.set("Preview has errors. Fix the pattern before renaming.")
 		else:
-			self.status_var.set(f"Preview ready for {len(new_names)} files.")
+			if select_mode:
+				skipped_count = len(self.items) - len(active_items)
+				self.status_var.set(f"Preview ready: {len(new_names)} files to rename, {skipped_count} files skipped.")
+			else:
+				self.status_var.set(f"Preview ready for {len(new_names)} files.")
 		return errors
 
 	def _apply_rename(self) -> None:
@@ -790,7 +814,11 @@ class ImageRenameApp(tk.Tk):
 				)
 				return
 
-		if not messagebox.askyesno("Confirm rename", f"Rename {len(active_items)} files?"):
+		if not messagebox.askyesno(
+			"Confirm rename", 
+			f"Rename {len(active_items)} files?" + 
+			(f"\n({len(self.items) - len(active_items)} files will be skipped)" if self.rename_selected_var.get() and len(active_items) < len(self.items) else "")
+		):
 			return
 
 		temp_paths: list[Path] = []
